@@ -1,19 +1,27 @@
-import { forkJoin } from 'rxjs';
-// Mike is from New Delhi and likes to eat pasta.
+import { forkJoin, Observable } from 'rxjs';
 
-import { ajax } from 'rxjs/ajax';
+const a$ = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.next('A');
+    subscriber.complete();
+  }, 5000);
 
-const randomName$ = ajax('https://random-data-api.com/api/name/random_name');
+  return () => {
+    console.log('A Teardown');
+  };
+});
 
-const randomNation$ = ajax(
-  'https://random-data-api.com/api/nation/random_nation'
-);
+const b$ = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.error('Failure!');
+  }, 3000);
 
-const randomFood$ = ajax('https://random-data-api.com/api/food/random_food');
+  return () => {
+    console.log('B Teardown');
+  };
+});
 
-forkJoin([randomName$, randomNation$, randomFood$]).subscribe(
-  ([nameAjax, nationAjax, foodAjax]) =>
-    console.log(
-      `${nameAjax.response.first_name} is from ${nationAjax.response.capital} and likes to eat ${foodAjax.response.dish}.`
-    )
-);
+forkJoin([a$, b$]).subscribe({
+  next: (value) => console.log(value),
+  error: (err) => console.log('Error:', err),
+});
