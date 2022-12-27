@@ -19,7 +19,7 @@ const newsFeed$ = new Observable<AdType>((subscriber) => {
   setTimeout(() => subscriber.next({ category: 'Sports', content: 'D' }), 5000);
   setTimeout(
     () => subscriber.next({ category: 'Business', content: 'E' }),
-    6000
+    6500
   );
 });
 
